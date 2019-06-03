@@ -14,7 +14,7 @@ func TestHealthRoute(t *testing.T) {
 	// Create a new echo router
 	e := echo.New()
 
-	// Regier our echo routes onto our new router
+	// Register our echo routes onto our new router
 	RegisterRoutes(e)
 
 	// Create a new test request that will be given to our server
