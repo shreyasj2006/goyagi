@@ -7,7 +7,8 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	app := New()
+	app, err := New()
+	assert.NoError(t, err)
 	assert.NotNil(t, app)
 	assert.NotNil(t, app.Config)
 }

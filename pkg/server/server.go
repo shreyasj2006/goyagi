@@ -9,6 +9,7 @@ import (
 	"github.com/lob/logger-go"
 	"github.com/shreyasj2006/goyagi/pkg/application"
 	"github.com/shreyasj2006/goyagi/pkg/health"
+	"github.com/shreyasj2006/goyagi/pkg/movies"
 	"github.com/shreyasj2006/goyagi/pkg/signals"
 )
 
@@ -23,6 +24,8 @@ func New(app application.App) *http.Server {
 		Addr:    fmt.Sprintf(":%d", app.Config.Port),
 		Handler: e,
 	}
+
+	movies.RegisterRoutes(e, app)
 
 	// signals.Setup() returns a channel we can wait until it's closed before we
 	// shutdown our server
