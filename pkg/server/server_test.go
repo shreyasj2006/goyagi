@@ -11,7 +11,8 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	app := application.New()
+	app, err := application.New()
+	assert.NoError(t, err)
 	srv := New(app)
 
 	t.Run("serves registered endpoint", func(tt *testing.T) {

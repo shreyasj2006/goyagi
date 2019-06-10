@@ -10,5 +10,9 @@ func loadDevelopmentConfig(cfg *Config) {
 	if err == nil {
 		cfg.Port = port
 	}
+
+	cfg.DatabaseHost = "127.0.0.1"
+	cfg.DatabaseName = "goyagi"
+	cfg.DatabaseUser = "goyagi_admin"
 	cfg.Environment = "development"
 }

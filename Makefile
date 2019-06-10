@@ -51,3 +51,23 @@ start:
 test:
 	@echo "---> Testing"
 	go test ./... -race -coverprofile $(COVERAGE_PROFILE)
+
+.PHONY: db-reset
+db-reset:
+	@dropdb --if-exists goyagi
+	@dropuser --if-exists goyagi_admin
+
+.PHONY: db-setup
+db-setup:
+	make db-reset
+	@createuser goyagi_admin
+	@createdb -O goyagi_admin goyagi
+	make db-migrate
+
+.PHONY: db-migrate
+db-migrate:
+	@go run cmd/migrations/*.go migrate
+
+.PHONY: db-rollback
+db-rollback:
+	@go run cmd/migrations/*.go rollback
