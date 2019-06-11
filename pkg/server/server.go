@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/lob/logger-go"
 	"github.com/shreyasj2006/goyagi/pkg/application"
+	"github.com/shreyasj2006/goyagi/pkg/binder"
 	"github.com/shreyasj2006/goyagi/pkg/health"
 	"github.com/shreyasj2006/goyagi/pkg/movies"
 	"github.com/shreyasj2006/goyagi/pkg/signals"
@@ -18,6 +19,9 @@ func New(app application.App) *http.Server {
 	log := logger.New()
 
 	e := echo.New()
+	b := binder.New()
+	e.Binder = b
+
 	health.RegisterRoutes(e)
 
 	srv := &http.Server{
