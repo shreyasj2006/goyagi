@@ -27,7 +27,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("rejects invalid content types", func(tt *testing.T) {
 		payload := []byte("{}")
-		c, _ := test.NewContext(t, payload, "invalid")
+		c, _ := test.NewContext(t, payload, "invalid", "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.Contains(t, err.Error(), "Unsupported Media Type")
@@ -35,7 +35,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("extracts request from request", func(tt *testing.T) {
 		payload := []byte(`{"title": "banana"}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.NoError(t, err)
@@ -44,7 +44,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("enforces required values", func(tt *testing.T) {
 		payload := []byte(`{}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.Contains(t, err.Error(), "is required")
@@ -52,7 +52,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("sets default values", func(tt *testing.T) {
 		payload := []byte(`{"title": "banana"}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.NoError(t, err)
@@ -61,7 +61,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("trims whitespace", func(tt *testing.T) {
 		payload := []byte(`{"title": "                 banana               "}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.NoError(t, err)
@@ -70,7 +70,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("enforces min values on strings", func(tt *testing.T) {
 		payload := []byte(`{"title": "1"}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.Contains(t, err.Error(), "length must be at least 5 characters long")
@@ -78,7 +78,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("enforces max values on strings", func(tt *testing.T) {
 		payload := []byte(`{"title": "123456789"}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.Contains(t, err.Error(), "length must be less than or equal to 8 characters long")
@@ -86,7 +86,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("enforces min values on integers", func(tt *testing.T) {
 		payload := []byte(`{"title": "banana", "age": 1}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.Contains(t, err.Error(), "must be at least 18")
@@ -94,7 +94,7 @@ func TestBind(t *testing.T) {
 
 	t.Run("enforces max values on integers", func(tt *testing.T) {
 		payload := []byte(`{"title": "banana", "age": 100}`)
-		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON)
+		c, _ := test.NewContext(t, payload, echo.MIMEApplicationJSON, "")
 		p := params{}
 		err := b.Bind(&p, c)
 		assert.Contains(t, err.Error(), "must be less than or equal to 99")
