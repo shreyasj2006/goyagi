@@ -1,12 +1,20 @@
 package movies
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-pg/pg"
 	"github.com/labstack/echo"
 	"github.com/shreyasj2006/goyagi/pkg/application"
 	"github.com/shreyasj2006/goyagi/pkg/model"
+)
+
+const (
+	resultError   = "result:error"
+	resultSuccess = "result:success"
+
+	timerPrefix = "goyagi.movies"
 )
 
 type handler struct {
@@ -26,13 +34,13 @@ func (h *handler) createHandler(c echo.Context) error {
 		ReleaseDate: params.ReleaseDate,
 	}
 
-	insertTimer := h.app.Metrics.NewTimer("goyagi.movies.create.db")
+	insertTimer := h.app.Metrics.NewTimer(fmt.Sprintf("%s.create.db", timerPrefix))
 	_, err := h.app.DB.Model(&movie).Insert()
 	if err != nil {
-		insertTimer.End("result:error")
+		insertTimer.End(resultError)
 		return err
 	}
-	insertTimer.End("result:success")
+	insertTimer.End(resultSuccess)
 
 	return c.JSON(http.StatusOK, movie)
 }
@@ -45,6 +53,7 @@ func (h *handler) listHandler(c echo.Context) error {
 
 	var movies []*model.Movie
 
+	selectTimer := h.app.Metrics.NewTimer(fmt.Sprintf("%s.select.db", timerPrefix))
 	err := h.app.DB.
 		Model(&movies).
 		Limit(params.Limit).
@@ -52,8 +61,10 @@ func (h *handler) listHandler(c echo.Context) error {
 		Order("id DESC").
 		Select()
 	if err != nil {
+		selectTimer.End(resultError)
 		return err
 	}
+	selectTimer.End(resultSuccess)
 
 	return c.JSON(http.StatusOK, movies)
 }
@@ -63,13 +74,16 @@ func (h *handler) retrieveHandler(c echo.Context) error {
 
 	var movie model.Movie
 
+	selectTimer := h.app.Metrics.NewTimer(fmt.Sprintf("%s.select.db", timerPrefix))
 	err := h.app.DB.Model(&movie).Where("id = ?", id).First()
 	if err != nil {
+		selectTimer.End(resultError)
 		if err == pg.ErrNoRows {
 			return echo.NewHTTPError(http.StatusNotFound, "movie not found")
 		}
 		return err
 	}
+	selectTimer.End(resultSuccess)
 
 	return c.JSON(http.StatusOK, movie)
 }
