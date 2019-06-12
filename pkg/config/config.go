@@ -14,6 +14,7 @@ type Config struct {
 	DatabasePassword string
 	Environment      string
 	Port             int
+	SentryDSN        string
 }
 
 const environmentENV = "ENVIRONMENT"
@@ -24,6 +25,7 @@ func New() Config {
 	cfg := Config{
 		DatabasePort: 5432,
 		Port:         3000,
+		SentryDSN:    os.Getenv("SENTRY_DSN"),
 	}
 
 	switch os.Getenv(environmentENV) {
